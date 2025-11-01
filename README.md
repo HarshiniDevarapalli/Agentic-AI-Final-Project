@@ -190,5 +190,214 @@ Follow these steps:
 * **Data Flow:** JSON structured automation
 
 
+
+
+## 🧩 Step-by-Step Implementation of the Project. 
+
+Follow these steps to set up and deploy the **HR Expert — Automated Candidate Evaluation System**.
+
+---
+
+### **1. Preparation**
+
+* **Create Accounts & Collect Credentials:**
+  Set up accounts for **n8n**, **OpenAI**, **Google Cloud (Drive, Sheets, Gmail)**, and other integrations.
+  Obtain API keys, OAuth client IDs, and service credentials, and store them securely.
+
+* **Project Repository Setup:**
+  Create a local folder or GitHub repository to store your workflow exports, prompts, and documentation.
+  Maintain prompt templates like `personal_data_prompt.txt`, `evaluation_prompt.txt`, etc.
+
+---
+
+### **2. Environment Setup**
+
+* **Install & Run n8n:**
+  Choose between **local** (for testing) and **cloud hosting** (for production).
+  For local setup, you can use Docker:
+
+  ```bash
+  docker run -it --rm \
+    --name n8n -p 5678:5678 \
+    -e N8N_BASIC_AUTH_ACTIVE=true \
+    -e N8N_BASIC_AUTH_USER=<user> \
+    -e N8N_BASIC_AUTH_PASSWORD=<pass> \
+    n8nio/n8n
+  ```
+
+* **Expose Webhook (for testing):**
+  Use **ngrok** to get a temporary public URL for your local n8n instance:
+
+  ```bash
+  ngrok http 5678
+  ```
+
+---
+
+### **3. Google & Email Configuration**
+
+* **Enable Google APIs:**
+  In Google Cloud Console, enable **Drive**, **Sheets**, and **Gmail** APIs.
+  Create an **OAuth Client ID** and set the redirect URI as:
+
+  ```
+  http://localhost:5678/rest/oauth2-credential/callback
+  ```
+
+  or your deployed domain equivalent.
+
+* **Gmail Integration:**
+  Connect Gmail via OAuth or SMTP in n8n.
+  Test a sample “Send Email” node to ensure credentials are valid.
+
+---
+
+### **4. Google Sheets Setup**
+
+* **Job Profiles Sheet:**
+  Create a sheet with columns:
+
+  ```
+  job_id | title | required_skills | min_experience | description
+  ```
+* **Candidate Evaluations Sheet:**
+  Create another sheet:
+
+  ```
+  date | name | email | city | skills | summary | vote | consideration | decision | resume_link
+  ```
+
+  Share both sheets with the same Google account linked in n8n.
+
+---
+
+### **5. Form & Resume Collection**
+
+* **Candidate Submission Form:**
+  Use an n8n form trigger or a simple HTML form to collect:
+
+  * Name
+  * Email
+  * CV (PDF Upload)
+
+* **Webhook Connection:**
+  Connect your form submission to the **Webhook Trigger** in n8n to start the workflow automatically.
+
+---
+
+### **6. Resume Handling**
+
+* **File Storage:**
+  Save uploaded CVs to Google Drive and capture their file links.
+* **PDF Extraction:**
+  Use the *Extract from File* node to read text, metadata, and author info.
+  This converts unstructured PDFs into machine-readable text.
+
+---
+
+### **7. AI Data Extraction**
+
+* **Personal Data Model:**
+  Extract structured details such as Name, Email, Phone Number, and City.
+* **Qualifications Model:**
+  Extract education, experience, projects, and key skills.
+* **Output:** Two structured JSON datasets merged later.
+
+---
+
+### **8. Data Combination & Summarization**
+
+* **Merge Step:**
+  Combine personal and qualification data into a unified JSON structure.
+* **Summarization Chain:**
+  Generate a short AI-written summary of the candidate’s qualifications and achievements.
+
+---
+
+### **9. Job Profile Comparison**
+
+* **Manual Input Node:**
+  The “Profile Wanted” node contains:
+
+  * Desired role and responsibilities
+  * Required skills
+  * Minimum qualifications
+    This acts as the benchmark for evaluating candidates.
+
+---
+
+### **10. AI Evaluation**
+
+* **Evaluation Model (HR Expert Prompt):**
+  The model compares the **candidate summary** with the **job profile** using the following criteria:
+
+  * Technical skills alignment
+  * Experience & education relevance
+  * Soft skills and overall suitability
+    The output is a **JSON object** containing:
+
+  ```json
+  {
+    "vote": 8,
+    "consideration": "Strong React and web development background; suitable for next round."
+  }
+  ```
+
+---
+
+### **11. Decision & Email Automation**
+
+* **Decision Rules:**
+
+  * `vote >= 7` → Selected for Interview
+  * `vote <=6` → Rejected
+
+* **Automated Emails:**
+
+  * **Selected:** Sends a congratulatory message.
+  * **Rejected:** Sends a polite rejection email.
+  * Emails are sent via the Gmail node with dynamic placeholders for name and details.
+
+---
+
+### **12. Data Logging**
+
+* **Append to Google Sheets:**
+  Log candidate name, summary, decision, and AI considerations automatically in a centralized sheet.
+
+---
+
+### **13. Multi-Role Evaluation (Optional Enhancement)**
+
+* Allow the workflow to evaluate one candidate across **multiple job profiles**.
+* For each role in your job sheet:
+
+  * Compare extracted candidate skills with each profile.
+  * Run evaluation prompt for every role and log best matches.
+
+---
+
+### **14. Testing & Error Handling**
+
+* Test the workflow with multiple CVs (structured, unstructured, and scanned).
+* Handle edge cases like:
+
+  * Missing fields (e.g., no email).
+  * Parsing errors or API timeouts.
+* Add retry nodes for temporary failures.
+
+---
+
+### **15. Deployment & Maintenance**
+
+* Deploy n8n to a stable host.
+* Update redirect URIs and credentials for the production domain.
+* Schedule periodic reviews of the AI evaluation output to improve prompt accuracy.
+* Rotate API keys regularly for security.
+
+---
+
+
+
 ## **PPT LINK**
 * **https://docs.google.com/presentation/d/1dlaea0F99eIgqV1TKaumliKc-KKfneMwoK8_VpIjr0E/edit?usp=sharing**
