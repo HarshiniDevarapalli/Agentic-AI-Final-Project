@@ -189,3 +189,6 @@ Follow these steps:
 * **File Format:** PDF CVs
 * **Data Flow:** JSON structured automation
 
+
+## **PPT LINK**
+* **https://docs.google.com/presentation/d/1dlaea0F99eIgqV1TKaumliKc-KKfneMwoK8_VpIjr0E/edit?usp=sharing**
