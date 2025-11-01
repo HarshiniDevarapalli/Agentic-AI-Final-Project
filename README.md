@@ -1,6 +1,3 @@
-Here’s a complete **README.md** for your project — written professionally and suitable for GitHub or submission. It explains the purpose, workflow, tools, and setup clearly.
-
----
 
 # **HR Expert — Automated Candidate Evaluation System**
 
@@ -192,6 +189,3 @@ Follow these steps:
 * **File Format:** PDF CVs
 * **Data Flow:** JSON structured automation
 
----
-
-Would you like me to include screenshots and node-by-node descriptions (for each n8n node) to make this README presentation-ready? I can format it with captions and Markdown sections for a GitHub upload.
